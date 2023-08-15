@@ -95,7 +95,7 @@ public:
 		bool bIsFowTimerEnabled = false;
 
 	UPROPERTY(EditAnywhere)
-		float FowTimeLimit = 10.0f;
+		float FowTimeLimit = 5.0f;
 
 	//Check to see if we have a new FOW-texture.
 	bool bHasFOWTextureUpdate = false;

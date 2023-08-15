@@ -60,7 +60,6 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	FVector2D sightTexels;
 	float dividend = 100.0f / Manager->SamplesPerMeter;
 
-
 	for (auto Itr(Manager->FowActors.CreateIterator()); Itr; Itr++) {
 		// if you experience an occasional crash
 		if (StopTaskCounter.GetValue() != 0) {
@@ -103,15 +102,12 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		//Accessing the registerToFOW property Unfog boolean
 		//I declared the .h file for RegisterToFOW
 		//Dont forget the braces >()
-
 		if (*Itr != nullptr) {
 			isWriteUnFog = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteUnFog;
 			isWriteFow = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteFow;
 			isWriteTerraIncog = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteTerraIncog;
 			bUseLineOfSight = (*Itr)->FindComponentByClass<URegisterToFOW>()->bUseLineOfSight;
 		}
-
-
 
 		if (isWriteUnFog) {
 			//Unveil the positions our actors are currently looking at
@@ -156,7 +152,6 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		}
 
 		//Is the current actor marked for checking if is in terra incognita
-
 		if (*Itr != nullptr) {
 			bCheckActorInTerraIncog = (*Itr)->FindComponentByClass<URegisterToFOW>()->bCheckActorTerraIncog;
 		}
@@ -174,7 +169,6 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	}
 
 	if (Manager->GetIsBlurEnabled()) {
-
 		int offset = floorf(Manager->blurKernelSize / 2.0f);
 		for (auto Itr(texelsToBlur.CreateIterator()); Itr; ++Itr) {
 			int x = (Itr)->IntPoint().X;
@@ -207,37 +201,28 @@ void AFogOfWarWorker::UpdateFowTexture() {
 			Manager->TextureData[x + y * signedSize] = FColor((uint8)verticalSum, (uint8)verticalSum, (uint8)verticalSum, 255);
 		}
 	}
-	else {
+
+	if (Manager->bIsFowTimerEnabled){
 		for (int y = 0; y < signedSize; y++) {
 			for (int x = 0; x < signedSize; x++) {
-
 				if (Manager->UnfoggedData[x + (y * signedSize)]) {
 					//If we are currently looking at a position, unveil it completely
 					//if the vectors are inside de TSet
 					if (currentlyInSight.Contains(FVector2D(x, y))) {
-						Manager->TextureData[x + y * signedSize] = FColor(Manager->UnfogColor, Manager->UnfogColor, Manager->UnfogColor, 255);
-
-						if (Manager->bIsFowTimerEnabled) {
-							Manager->FOWArray[x + (y * signedSize)] = false;
-						}
-
+						Manager->FOWArray[x + (y * signedSize)] = false;
 					}
 					//If this is a previously discovered position that we're not currently looking at, put it into a "shroud of darkness".
 					else {
-						Manager->TextureData[x + y * signedSize] = FColor(Manager->FowMaskColor, Manager->FowMaskColor, Manager->FowMaskColor, 255);
 						//This line sets the color to black again in the textureData, sets the UnfoggedData to False
+						Manager->FOWArray[x + (y * signedSize)] = true;
 
-						if (Manager->bIsFowTimerEnabled) {
-							Manager->FOWArray[x + (y * signedSize)] = true;
-
-							if (Manager->FOWTimeArray[x + y * signedSize] >= Manager->FowTimeLimit) {
-								//setting the color
-								Manager->TextureData[x + y * signedSize] = FColor(0.0, 0.0, 0.0, 255.0);
-								//from FOW to TerraIncognita
-								Manager->UnfoggedData[x + (y * signedSize)] = false;
-								//reset the value
-								Manager->FOWArray[x + (y * signedSize)] = false;
-							}
+						if (Manager->FOWTimeArray[x + y * signedSize] >= Manager->FowTimeLimit) {
+							//setting the color
+							Manager->TextureData[x + y * signedSize] = FColor(0.0, 0.0, 0.0, 255.0);
+							//from FOW to TerraIncognita
+							Manager->UnfoggedData[x + (y * signedSize)] = false;
+							//reset the value
+							Manager->FOWArray[x + (y * signedSize)] = false;
 						}
 					}
 				}
