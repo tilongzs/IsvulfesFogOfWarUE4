@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -34,7 +34,7 @@ public:
 		FUpdateTextureRegion2D* Regions,
 		uint32 SrcPitch,
 		uint32 SrcBpp,
-		uint8* SrcData,
+		const TArray<FColor>& Data,
 		bool bFreeData);
 
 	//The number of samples per 100 unreal units

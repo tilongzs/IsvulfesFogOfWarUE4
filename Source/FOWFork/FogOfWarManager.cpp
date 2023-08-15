@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FogOfWarManager.h"
 #include "Rendering/Texture2DResource.h"
@@ -49,9 +49,9 @@ void AFogOfWarManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	if (FOWTexture && LastFOWTexture && bHasFOWTextureUpdate && bIsDoneBlending) {
 		LastFOWTexture->UpdateResource();
-		UpdateTextureRegions(LastFOWTexture, (int32)0, (uint32)1, textureRegions, (uint32)(4 * TextureSize), (uint32)4, (uint8*)LastFrameTextureData.GetData(), false);
+		UpdateTextureRegions(LastFOWTexture, (int32)0, (uint32)1, textureRegions, (uint32)(4 * TextureSize), (uint32)4, LastFrameTextureData, false);
 		FOWTexture->UpdateResource();
-		UpdateTextureRegions(FOWTexture, (int32)0, (uint32)1, textureRegions, (uint32)(4 * TextureSize), (uint32)4, (uint8*)TextureData.GetData(), false);
+		UpdateTextureRegions(FOWTexture, (int32)0, (uint32)1, textureRegions, (uint32)(4 * TextureSize), (uint32)4, TextureData, false);
 		bHasFOWTextureUpdate = false;
 		bIsDoneBlending = false;
 		//Trigger the blueprint update
@@ -121,7 +121,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 
 			//Force texture compression to vectorDispl , https://wiki.unrealengine.com/Procedural_Materials
 
-			//TODO here you need to add a halt or a warning to prevent the loading of textures that don�t meet the criteria
+			//TODO here you need to add a halt or a warning to prevent the loading of textures that don磘 meet the criteria
 			//no mipmaps, compression to vector Displacement
 			//i could check the compression settings, but they are in enum form
 
@@ -224,7 +224,7 @@ void AFogOfWarManager::LogNames() {
 	//FString TempString = GetName();
 }
 
-void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex, uint32 NumRegions, FUpdateTextureRegion2D* Regions, uint32 SrcPitch, uint32 SrcBpp, uint8* SrcData, bool bFreeData)
+void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex, uint32 NumRegions, FUpdateTextureRegion2D* Regions, uint32 SrcPitch, uint32 SrcBpp, const TArray<FColor>& Data, bool bFreeData)
 {
 	if (Texture && Texture->Resource)
 	{
@@ -236,7 +236,6 @@ void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex,
 			FUpdateTextureRegion2D* Regions;
 			uint32 SrcPitch;
 			uint32 SrcBpp;
-			uint8* SrcData;
 		};
 
 		FUpdateTextureRegionsData* RegionData = new FUpdateTextureRegionsData;
@@ -247,10 +246,9 @@ void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex,
 		RegionData->Regions = Regions;
 		RegionData->SrcPitch = SrcPitch;
 		RegionData->SrcBpp = SrcBpp;
-		RegionData->SrcData = SrcData;
 
 		ENQUEUE_RENDER_COMMAND(FUpdateTextureRegionsData)(
-			[RegionData = RegionData, bFreeData = bFreeData](FRHICommandListImmediate& RHICmdList)
+			[RegionData = RegionData, bFreeData = bFreeData, Data = Data](FRHICommandListImmediate& RHICmdList)
 
 		{
 			for (uint32 RegionIndex = 0; RegionIndex < RegionData->NumRegions; ++RegionIndex)
@@ -263,7 +261,7 @@ void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex,
 						RegionData->MipIndex - CurrentFirstMip,
 						RegionData->Regions[RegionIndex],
 						RegionData->SrcPitch,
-						RegionData->SrcData
+						(uint8*)Data.GetData()
 						+ RegionData->Regions[RegionIndex].SrcY * RegionData->SrcPitch
 						+ RegionData->Regions[RegionIndex].SrcX * RegionData->SrcBpp
 					);
@@ -272,7 +270,6 @@ void AFogOfWarManager::UpdateTextureRegions(UTexture2D* Texture, int32 MipIndex,
 			if (bFreeData)
 			{
 				FMemory::Free(RegionData->Regions);
-				FMemory::Free(RegionData->SrcData);
 			}
 			delete RegionData;
 		});
