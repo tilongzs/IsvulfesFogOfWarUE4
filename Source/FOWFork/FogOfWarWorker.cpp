@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FogOfWarWorker.h"
 #include "FOWFork.h"
@@ -174,44 +174,37 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	}
 
 	if (Manager->GetIsBlurEnabled()) {
-		//Horizontal blur pass
+
 		int offset = floorf(Manager->blurKernelSize / 2.0f);
 		for (auto Itr(texelsToBlur.CreateIterator()); Itr; ++Itr) {
 			int x = (Itr)->IntPoint().X;
 			int y = (Itr)->IntPoint().Y;
-			float sum = 0;
+			float horizontalSum = 0;
+			float verticalSum = 0;
 			for (int i = 0; i < Manager->blurKernelSize; i++) {
 				int shiftedIndex = i - offset;
+				//Horizontal blur pass
 				if (x + shiftedIndex >= 0 && x + shiftedIndex <= signedSize - 1) {
 					if (Manager->UnfoggedData[x + shiftedIndex + (y * signedSize)]) {
 						//If we are currently looking at a position, unveil it completely
 						if (currentlyInSight.Contains(FVector2D(x + shiftedIndex, y))) {
-							sum += (Manager->blurKernel[i] * 255);
+							horizontalSum += (Manager->blurKernel[i] * 255);
 						}
 						//If this is a previously discovered position that we're not currently looking at, put it into a "shroud of darkness".
 						else {
 							//sum += (Manager->blurKernel[i] * 100);
-							sum += (Manager->blurKernel[i] * Manager->FowMaskColor); //i mod this to make the blurred color unveiled
+							horizontalSum += (Manager->blurKernel[i] * Manager->FowMaskColor); //i mod this to make the blurred color unveiled
 						}
 					}
 				}
-			}
-			Manager->HorizontalBlurData[x + y * signedSize] = (uint8)sum;
-		}
 
-
-		//Vertical blur pass
-		for (auto Itr(texelsToBlur.CreateIterator()); Itr; ++Itr) {
-			int x = (Itr)->IntPoint().X;
-			int y = (Itr)->IntPoint().Y;
-			float sum = 0;
-			for (int i = 0; i < Manager->blurKernelSize; i++) {
-				int shiftedIndex = i - offset;
+				//Vertical blur pass
 				if (y + shiftedIndex >= 0 && y + shiftedIndex <= signedSize - 1) {
-					sum += (Manager->blurKernel[i] * Manager->HorizontalBlurData[x + (y + shiftedIndex) * signedSize]);
+					verticalSum += (Manager->blurKernel[i] * Manager->HorizontalBlurData[x + (y + shiftedIndex) * signedSize]);
 				}
 			}
-			Manager->TextureData[x + y * signedSize] = FColor((uint8)sum, (uint8)sum, (uint8)sum, 255);
+			Manager->HorizontalBlurData[x + y * signedSize] = (uint8)horizontalSum;
+			Manager->TextureData[x + y * signedSize] = FColor((uint8)verticalSum, (uint8)verticalSum, (uint8)verticalSum, 255);
 		}
 	}
 	else {
@@ -245,16 +238,9 @@ void AFogOfWarWorker::UpdateFowTexture() {
 								//reset the value
 								Manager->FOWArray[x + (y * signedSize)] = false;
 							}
-
 						}
-
-
-
-
 					}
 				}
-
-
 			}
 		}
 	}
