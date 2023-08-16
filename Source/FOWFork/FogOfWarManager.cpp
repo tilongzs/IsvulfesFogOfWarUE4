@@ -38,7 +38,7 @@ AFogOfWarManager::~AFogOfWarManager() {
 void AFogOfWarManager::BeginPlay() {
 	Super::BeginPlay();
 	bIsDoneBlending = true;
-	AFogOfWarManager::StartFOWTextureUpdate();
+	StartFOWTextureUpdate();
 	//I commented this to remove the player from the FOW
 	//RegisterFowActor(GetWorld()->GetFirstPlayerController()->GetPawn());
 
@@ -86,6 +86,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		LastFrameTextureData.Init(FColor(0, 0, 0, 255), arraySize);
 		HorizontalBlurData.Init(0, arraySize);
 		TerraIncog.Init(true, arraySize);
+		ViewingArea.Init(false, arraySize);
 		FOWThread = new AFogOfWarWorker(this);
 
 		//Time stuff

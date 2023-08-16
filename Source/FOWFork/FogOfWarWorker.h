@@ -30,11 +30,6 @@ public:
 
 	//Method to perform work
 	void UpdateFOWTexture();
-	bool bShouldUpdate = false;
-	bool isWriteUnFog = false;
-	bool isWriteTerraIncog = false;
-	bool bCheckActorInTerraIncog = false;//Bool, is the actor in terra incognita territory
-	bool bUseLineOfSight = true;
 
 	void ShutDown();
 };

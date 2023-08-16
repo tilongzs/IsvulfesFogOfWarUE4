@@ -66,6 +66,9 @@ public:
 	// 从未探索过的区域数据（全黑）
 	UPROPERTY()
 		TArray<bool> TerraIncog;
+	// 当前可视区域数据（全透明）
+	UPROPERTY()
+		TArray<bool> ViewingArea;
 
 	//Temp array for horizontal blur pass
 	UPROPERTY()

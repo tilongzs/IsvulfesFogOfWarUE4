@@ -100,14 +100,11 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 		//Accessing the registerToFOW property Unfog boolean
 		//I declared the .h file for RegisterToFOW
 		//Dont forget the braces >()
-		isWriteUnFog = FOWComponent->WriteUnFog;
-		isWriteTerraIncog = FOWComponent->WriteTerraIncog;
-		bUseLineOfSight = FOWComponent->bUseLineOfSight;
-
-		if (isWriteUnFog) {
+		if (FOWComponent->WriteUnFog) {
 			//Unveil the positions our actors are currently looking at
 			for (int y = posY - sightTexels.Y; y <= posY + sightTexels.Y; y++) {
 				for (int x = posX - sightTexels.X; x <= posX + sightTexels.X; x++) {
+					Manager->ViewingArea[x + y * Manager->TextureSize] = false;
 					//Kernel for radial sight
 					if (x > 0 && x < size && y > 0 && y < size) {
 						FVector2D currentTextureSpacePos = FVector2D(x, y);
@@ -126,32 +123,44 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 							//for every ray we would unveil all the points between the collision and origo using Bresenham's Line-drawing algorithm.
 							//However, the tracing doesn't seem like it takes much time at all (~0.02ms with four actors tracing circles of 18 texels each),
 							//it's the blurring that chews CPU..
-
-							if (!bUseLineOfSight || !Manager->GetWorld()->LineTraceTestByChannel(position, currentWorldSpacePos, ECC_WorldStatic, queryParams)) {
+							if (!FOWComponent->bUseLineOfSight || !Manager->GetWorld()->LineTraceTestByChannel(position, currentWorldSpacePos, ECC_WorldStatic, queryParams)) {
 								//Is the actor able to affect the terra incognita
-								if (isWriteTerraIncog) {
+								if (FOWComponent->WriteTerraIncog) {
 									//if the actor is able then
 									//Unveil the positions we are currently seeing
 									Manager->TerraIncog[x + y * Manager->TextureSize] = false;
 								}
+
 								//Store the positions we are currently seeing.
 								currentlyInSight.Add(FVector2D(x, y));
 							}
+						}
+
+						int lengthView = (int)(textureSpacePos - currentTextureSpacePos).Size() - halfKernelSize;
+						if (lengthView <= sightTexels.Size() / 2) {
+							Manager->ViewingArea[x + y * Manager->TextureSize] = true;
 						}
 					}
 				}
 			}
 		}
 
-		//Is the current actor marked for checking if is in terra incognita
-		bCheckActorInTerraIncog = FOWComponent->bCheckActorTerraIncog;
-		if (bCheckActorInTerraIncog) {
-			//if the current position textureSpacePosXY in the UnfoggedData bool array is false the actor is in the Terra Incognita
-			if (Manager->TerraIncog[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize]) {
-				FOWComponent->isActorInTerraIncog = true;
+		if (FOWComponent->bCheckActorFOW) {
+			//if the current position textureSpacePosXY in the TerraIncog bool array is true the actor is in the Viewing Area
+			if (Manager->ViewingArea[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize]) {
+				FOWComponent->isActorInViewingArea = true;
+				FOWComponent->isActorInTerraIncog = false;
 			}
 			else {
-				FOWComponent->isActorInTerraIncog = false;
+				FOWComponent->isActorInViewingArea = false;
+
+				//if the current position textureSpacePosXY in the TerraIncog bool array is true the actor is in the Terra Incognita
+				if (Manager->TerraIncog[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize]) {
+					FOWComponent->isActorInTerraIncog = true;
+				}
+				else {
+					FOWComponent->isActorInTerraIncog = false;
+				}
 			}
 		}
 	}
