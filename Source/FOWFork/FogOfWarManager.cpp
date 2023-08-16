@@ -88,10 +88,10 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		FOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		LastFOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		int arraySize = TextureSize * TextureSize;
-		TextureData.Init(FColor(0, 0, 0, 255), arraySize);
+		TextureData.Init(FColor(0, 0, 0, 255), arraySize); // 初始迷雾透明度（255完全透明）
 		LastFrameTextureData.Init(FColor(0, 0, 0, 255), arraySize);
 		HorizontalBlurData.Init(0, arraySize);
-		UnfoggedData.Init(false, arraySize);
+		UnfoggedData.Init(false, arraySize); // true全部没有迷雾（透明） false全部迷雾（不透明）
 		FowThread = new AFogOfWarWorker(this);
 
 		//Time stuff
@@ -121,7 +121,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 
 			//Force texture compression to vectorDispl , https://wiki.unrealengine.com/Procedural_Materials
 
-			//TODO here you need to add a halt or a warning to prevent the loading of textures that don磘 meet the criteria
+			//TODO here you need to add a halt or a warning to prevent the loading of textures that don meet the criteria
 			//no mipmaps, compression to vector Displacement
 			//i could check the compression settings, but they are in enum form
 

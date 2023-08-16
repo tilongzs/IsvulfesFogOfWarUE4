@@ -60,21 +60,19 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	FVector2D sightTexels;
 	float dividend = 100.0f / Manager->SamplesPerMeter;
 
+	URegisterToFOW* FOWComponent = nullptr;
 	for (auto Itr(Manager->FowActors.CreateIterator()); Itr; Itr++) {
 		// if you experience an occasional crash
 		if (StopTaskCounter.GetValue() != 0) {
 			return;
 		}
 		//Find actor position
-		if (!*Itr || !(*Itr)->FindComponentByClass<URegisterToFOW>()) return;
+		FOWComponent = (*Itr)->FindComponentByClass<URegisterToFOW>();
+		if (!*Itr || !FOWComponent || !IsValid(FOWComponent)) return;
 		FVector position = (*Itr)->GetActorLocation();
 
 		//Get sight range from FOWComponent
-		URegisterToFOW* FOWComponent = (*Itr)->FindComponentByClass<URegisterToFOW>();
-		if (IsValid(FOWComponent))
-		{
-			sightTexels = FOWComponent->SightRange * Manager->SamplesPerMeter;
-		}
+		sightTexels = FOWComponent->SightRange * Manager->SamplesPerMeter;
 
 		//We divide by 100.0 because 1 texel equals 1 meter of visibility-data.
 		int posX = (int)(position.X / dividend) + halfTextureSize;
@@ -102,12 +100,10 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		//Accessing the registerToFOW property Unfog boolean
 		//I declared the .h file for RegisterToFOW
 		//Dont forget the braces >()
-		if (*Itr != nullptr) {
-			isWriteUnFog = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteUnFog;
-			isWriteFow = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteFow;
-			isWriteTerraIncog = (*Itr)->FindComponentByClass<URegisterToFOW>()->WriteTerraIncog;
-			bUseLineOfSight = (*Itr)->FindComponentByClass<URegisterToFOW>()->bUseLineOfSight;
-		}
+		isWriteUnFog = FOWComponent->WriteUnFog;
+		isWriteFow = FOWComponent->WriteFow;
+		isWriteTerraIncog = FOWComponent->WriteTerraIncog;
+		bUseLineOfSight = FOWComponent->bUseLineOfSight;
 
 		if (isWriteUnFog) {
 			//Unveil the positions our actors are currently looking at
@@ -133,9 +129,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 							//it's the blurring that chews CPU..
 
 							if (!bUseLineOfSight || !Manager->GetWorld()->LineTraceTestByChannel(position, currentWorldSpacePos, ECC_WorldStatic, queryParams)) {
-
 								//Is the actor able to affect the terra incognita
-
 								if (isWriteTerraIncog) {
 									//if the actor is able then
 									//Unveil the positions we are currently seeing
@@ -152,20 +146,16 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		}
 
 		//Is the current actor marked for checking if is in terra incognita
-		if (*Itr != nullptr) {
-			bCheckActorInTerraIncog = (*Itr)->FindComponentByClass<URegisterToFOW>()->bCheckActorTerraIncog;
-		}
+		bCheckActorInTerraIncog = FOWComponent->bCheckActorTerraIncog;
 		if (bCheckActorInTerraIncog) {
 			//if the current position textureSpacePosXY in the UnfoggedData bool array is false the actor is in the Terra Incognita
 			if (Manager->UnfoggedData[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize] == false) {
-				(*Itr)->FindComponentByClass<URegisterToFOW>()->isActorInTerraIncog = true;
-
+				FOWComponent->isActorInTerraIncog = true;
 			}
 			else {
-				(*Itr)->FindComponentByClass<URegisterToFOW>()->isActorInTerraIncog = false;
+				FOWComponent->isActorInTerraIncog = false;
 			}
 		}
-
 	}
 
 	if (Manager->GetIsBlurEnabled()) {
@@ -232,7 +222,6 @@ void AFogOfWarWorker::UpdateFowTexture() {
 
 	Manager->bHasFOWTextureUpdate = true;
 }
-
 
 void AFogOfWarWorker::Stop() {
 	StopTaskCounter.Increment();
