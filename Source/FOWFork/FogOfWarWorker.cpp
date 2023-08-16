@@ -234,7 +234,7 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 
 						if (Manager->FOWTimeArray[x + y * signedSize] >= Manager->FOWTimeLimit) {
 							//setting the color
-							Manager->TextureData[x + y * signedSize] = FColor(0.0, 0.0, 0.0, 255.0);
+							Manager->TextureData[x + y * signedSize] = FColor(Manager->TerraIncogColor, Manager->TerraIncogColor, Manager->TerraIncogColor, 255.0);
 							//from FOW to TerraIncognita
 							Manager->TerraIncog[x + (y * signedSize)] = true;
 							//reset the value

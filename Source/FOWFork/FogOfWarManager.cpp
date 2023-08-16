@@ -82,8 +82,8 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		FOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		LastFOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		int arraySize = TextureSize * TextureSize;
-		TextureData.Init(FColor(0, 0, 0, 255), arraySize); // 初始迷雾透明度（255完全透明）
-		LastFrameTextureData.Init(FColor(0, 0, 0, 255), arraySize);
+		TextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize); // 初始迷雾透明度（255完全透明）
+		LastFrameTextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize);
 		HorizontalBlurData.Init(0, arraySize);
 		TerraIncog.Init(true, arraySize);
 		ViewingArea.Init(false, arraySize);

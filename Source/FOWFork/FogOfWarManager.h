@@ -46,6 +46,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		uint8	FOWMaskColor = (uint8)100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
+		uint8	TerraIncogColor = (uint8)0;
+
 	UPROPERTY(EditAnywhere, Category = FogOfWar)
 		bool bUseTextureFile = true;
 
