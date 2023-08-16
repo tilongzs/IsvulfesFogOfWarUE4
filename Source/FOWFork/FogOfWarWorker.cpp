@@ -198,6 +198,24 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 			Manager->TextureData[x + y * signedSize] = FColor((uint8)verticalSum, (uint8)verticalSum, (uint8)verticalSum, 255);
 		}
 	}
+	else {
+		for (int y = 0; y < signedSize; y++) {
+			for (int x = 0; x < signedSize; x++) {
+				if (!Manager->TerraIncog[x + (y * signedSize)]) {
+					//If we are currently looking at a position, unveil it completely
+					//if the vectors are inside de TSet
+					if (currentlyInSight.Contains(FVector2D(x, y))) {
+						Manager->TextureData[x + y * signedSize] = FColor(Manager->UnfogColor, Manager->UnfogColor, Manager->UnfogColor, 255);
+					}
+					//If this is a previously discovered position that we're not currently looking at, put it into a "shroud of darkness".
+					else {
+						Manager->TextureData[x + y * signedSize] = FColor(Manager->FOWMaskColor, Manager->FOWMaskColor, Manager->FOWMaskColor, 255);
+						//This line sets the color to black again in the textureData, sets the UnfoggedData to False
+					}
+				}
+			}
+		}
+	}
 
 	// 如果启用了黑幕定时器，则检测是否重新黑幕
 	if (Manager->bIsFOWTimerEnabled){

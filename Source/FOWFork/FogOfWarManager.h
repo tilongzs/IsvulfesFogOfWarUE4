@@ -140,17 +140,17 @@ private:
 
 	//Our dynamically updated texture
 	UPROPERTY()
-		UTexture2D* FOWTexture;
+		UTexture2D* FOWTexture = nullptr;
 
 	//Texture from last update. We blend between the two to do a smooth unveiling of newly discovered areas.
 	UPROPERTY()
-		UTexture2D* LastFOWTexture;
+		UTexture2D* LastFOWTexture = nullptr;
 
 	//Texture regions
-	FUpdateTextureRegion2D* textureRegions;
+	FUpdateTextureRegion2D* textureRegions = nullptr;
 
 	//Our FOW updatethread
-	AFogOfWarWorker* FOWThread;
+	AFogOfWarWorker* FOWThread = nullptr;
 
 	//This is for accessing the actor component "RegisterToFow_BP"
 	UActorComponent* ActorComp = nullptr;
