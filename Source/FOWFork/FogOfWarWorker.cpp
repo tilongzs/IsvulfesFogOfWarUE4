@@ -68,7 +68,9 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		}
 		//Find actor position
 		FOWComponent = (*Itr)->FindComponentByClass<URegisterToFOW>();
-		if (!*Itr || !FOWComponent || !IsValid(FOWComponent)) return;
+		if (!*Itr || !FOWComponent || !IsValid(FOWComponent)) {
+			continue;
+		}
 		FVector position = (*Itr)->GetActorLocation();
 
 		//Get sight range from FOWComponent
@@ -101,7 +103,6 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		//I declared the .h file for RegisterToFOW
 		//Dont forget the braces >()
 		isWriteUnFog = FOWComponent->WriteUnFog;
-		isWriteFow = FOWComponent->WriteFow;
 		isWriteTerraIncog = FOWComponent->WriteTerraIncog;
 		bUseLineOfSight = FOWComponent->bUseLineOfSight;
 
@@ -133,11 +134,10 @@ void AFogOfWarWorker::UpdateFowTexture() {
 								if (isWriteTerraIncog) {
 									//if the actor is able then
 									//Unveil the positions we are currently seeing
-									Manager->UnfoggedData[x + y * Manager->TextureSize] = true;
+									Manager->TerraIncog[x + y * Manager->TextureSize] = false;
 								}
 								//Store the positions we are currently seeing.
 								currentlyInSight.Add(FVector2D(x, y));
-
 							}
 						}
 					}
@@ -149,7 +149,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		bCheckActorInTerraIncog = FOWComponent->bCheckActorTerraIncog;
 		if (bCheckActorInTerraIncog) {
 			//if the current position textureSpacePosXY in the UnfoggedData bool array is false the actor is in the Terra Incognita
-			if (Manager->UnfoggedData[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize] == false) {
+			if (Manager->TerraIncog[textureSpacePos.X + textureSpacePos.Y * Manager->TextureSize]) {
 				FOWComponent->isActorInTerraIncog = true;
 			}
 			else {
@@ -169,7 +169,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 				int shiftedIndex = i - offset;
 				//Horizontal blur pass
 				if (x + shiftedIndex >= 0 && x + shiftedIndex <= signedSize - 1) {
-					if (Manager->UnfoggedData[x + shiftedIndex + (y * signedSize)]) {
+					if (!Manager->TerraIncog[x + shiftedIndex + (y * signedSize)]) {
 						//If we are currently looking at a position, unveil it completely
 						if (currentlyInSight.Contains(FVector2D(x + shiftedIndex, y))) {
 							horizontalSum += (Manager->blurKernel[i] * 255);
@@ -195,7 +195,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	if (Manager->bIsFowTimerEnabled){
 		for (int y = 0; y < signedSize; y++) {
 			for (int x = 0; x < signedSize; x++) {
-				if (Manager->UnfoggedData[x + (y * signedSize)]) {
+				if (!Manager->TerraIncog[x + (y * signedSize)]) {
 					//If we are currently looking at a position, unveil it completely
 					//if the vectors are inside de TSet
 					if (currentlyInSight.Contains(FVector2D(x, y))) {
@@ -210,7 +210,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 							//setting the color
 							Manager->TextureData[x + y * signedSize] = FColor(0.0, 0.0, 0.0, 255.0);
 							//from FOW to TerraIncognita
-							Manager->UnfoggedData[x + (y * signedSize)] = false;
+							Manager->TerraIncog[x + (y * signedSize)] = true;
 							//reset the value
 							Manager->FOWArray[x + (y * signedSize)] = false;
 						}

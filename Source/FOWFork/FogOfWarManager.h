@@ -65,9 +65,9 @@ public:
 	//The size of our textures
 	uint32 TextureSize = 1024;
 
-	//Array containing what parts of the map we've unveiled.
+	// 从未探索过的区域数据（全黑）
 	UPROPERTY()
-		TArray<bool> UnfoggedData;
+		TArray<bool> TerraIncog;
 
 	//Temp array for horizontal blur pass
 	UPROPERTY()

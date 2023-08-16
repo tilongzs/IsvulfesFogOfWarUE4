@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,9 +28,6 @@ public:
 	/*Is the actor able to influence unfogged texels*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		bool WriteUnFog = true;
-	/*Is the actor able to influence fog of war texels*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
-		bool WriteFow = true;
 	/*Is the actor able to influence terra incognita texels*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		bool WriteTerraIncog = true;

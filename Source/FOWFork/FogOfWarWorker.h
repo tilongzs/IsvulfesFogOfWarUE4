@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -34,7 +34,6 @@ public:
 	void UpdateFowTexture();
 	bool bShouldUpdate = false;
 	bool isWriteUnFog = false;
-	bool isWriteFow = false;
 	bool isWriteTerraIncog = false;
 	bool bCheckActorInTerraIncog = false;//Bool, is the actor in terra incognita territory
 	bool bUseLineOfSight = true;

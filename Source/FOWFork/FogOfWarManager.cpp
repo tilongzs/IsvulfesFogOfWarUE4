@@ -33,7 +33,9 @@ AFogOfWarManager::AFogOfWarManager()
 AFogOfWarManager::~AFogOfWarManager() {
 	if (FowThread) {
 		FowThread->ShutDown();
+		delete FowThread;
 	}
+	delete textureRegions;
 }
 
 void AFogOfWarManager::BeginPlay() {
@@ -58,8 +60,6 @@ void AFogOfWarManager::Tick(float DeltaSeconds) {
 		OnFowTextureUpdated(FOWTexture, LastFOWTexture);
 	}
 
-
-
 	if (bIsFowTimerEnabled) {
 		//Keeping the Measure of the time outside the Worker thread, otherwise the it does not work
 		//i guest that asking for the delta seconds inside the worker that not make sense, hence, it is detached
@@ -77,7 +77,6 @@ void AFogOfWarManager::Tick(float DeltaSeconds) {
 				if (!FOWArray[x + y * signedSize]) {
 					FOWTimeArray[x + y * signedSize] = 0.0f;
 				}
-
 			}
 		}
 	}
@@ -91,7 +90,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		TextureData.Init(FColor(0, 0, 0, 255), arraySize); // 初始迷雾透明度（255完全透明）
 		LastFrameTextureData.Init(FColor(0, 0, 0, 255), arraySize);
 		HorizontalBlurData.Init(0, arraySize);
-		UnfoggedData.Init(false, arraySize); // true全部没有迷雾（透明） false全部迷雾（不透明）
+		TerraIncog.Init(true, arraySize);
 		FowThread = new AFogOfWarWorker(this);
 
 		//Time stuff
@@ -151,7 +150,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 
 					//Here we are writing to the UnfoggedData Array the values that are already unveiled, from the texture file
 					if (pixel.B >= 100) {
-						UnfoggedData[x + y * TextureInFileSize] = true;
+						TerraIncog[x + y * TextureInFileSize] = false;
 					}
 
 				}
