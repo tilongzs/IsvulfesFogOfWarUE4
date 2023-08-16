@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -24,7 +22,7 @@ public:
 
 	//Register an actor to influence the FOW-texture
 	UFUNCTION(BlueprintCallable, Category = FogOfWar)
-		void RegisterFowActor(AActor* Actor);
+		void RegisterFOWActor(AActor* Actor);
 
 	//Stolen from https://wiki.unrealengine.com/Dynamic_Textures
 	void UpdateTextureRegions(
@@ -46,7 +44,7 @@ public:
 		uint8	UnfogColor = (uint8)255;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
-		uint8	FowMaskColor = (uint8)100;
+		uint8	FOWMaskColor = (uint8)100;
 
 	UPROPERTY(EditAnywhere, Category = FogOfWar)
 		bool bUseTextureFile = true;
@@ -92,10 +90,10 @@ public:
 		TArray<bool> FOWArray;
 
 	UPROPERTY(EditAnywhere)
-		bool bIsFowTimerEnabled = false;
+		bool bIsFOWTimerEnabled = false;
 
 	UPROPERTY(EditAnywhere)
-		float FowTimeLimit = 5.0f;
+		float FOWTimeLimit = 5.0f;
 
 	//Check to see if we have a new FOW-texture.
 	bool bHasFOWTextureUpdate = false;
@@ -109,10 +107,10 @@ public:
 
 	//Store the actors that will be unveiling the FOW-texture.
 	UPROPERTY()
-		TArray<AActor*> FowActors;
+		TArray<AActor*> FOWActors;
 
-	//DEBUG: Time it took to update the fow texture
-	float fowUpdateTime = 0;
+	//DEBUG: Time it took to update the FOW texture
+	float FOWUpdateTime = 0;
 
 	//Getter for the working thread
 	bool GetIsBlurEnabled();
@@ -131,13 +129,9 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
-
 	virtual void BeginPlay() override;
 
 private:
-
-	//void UpdateFowTexture();
-
 	//Triggers the start of a new FOW-texture-update
 	void StartFOWTextureUpdate();
 
@@ -152,8 +146,8 @@ private:
 	//Texture regions
 	FUpdateTextureRegion2D* textureRegions;
 
-	//Our fowupdatethread
-	AFogOfWarWorker* FowThread;
+	//Our FOW updatethread
+	AFogOfWarWorker* FOWThread;
 
 	//This is for accessing the actor component "RegisterToFow_BP"
 	UActorComponent* ActorComp = nullptr;

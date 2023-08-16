@@ -1,10 +1,7 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "FogOfWarManager.h"
+﻿#include "FogOfWarManager.h"
 #include "Rendering/Texture2DResource.h"
 #include "RegisterToFOW.h"
 
-// Sets default values
 AFogOfWarManager::AFogOfWarManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -31,9 +28,9 @@ AFogOfWarManager::AFogOfWarManager()
 }
 
 AFogOfWarManager::~AFogOfWarManager() {
-	if (FowThread) {
-		FowThread->ShutDown();
-		delete FowThread;
+	if (FOWThread) {
+		FOWThread->ShutDown();
+		delete FOWThread;
 	}
 	delete textureRegions;
 }
@@ -60,7 +57,7 @@ void AFogOfWarManager::Tick(float DeltaSeconds) {
 		OnFowTextureUpdated(FOWTexture, LastFOWTexture);
 	}
 
-	if (bIsFowTimerEnabled) {
+	if (bIsFOWTimerEnabled) {
 		//Keeping the Measure of the time outside the Worker thread, otherwise the it does not work
 		//i guest that asking for the delta seconds inside the worker that not make sense, hence, it is detached
 		//from the main game thread
@@ -68,13 +65,11 @@ void AFogOfWarManager::Tick(float DeltaSeconds) {
 		int signedSize = (int)TextureSize;
 		for (int y = 0; y < signedSize; y++) {
 			for (int x = 0; x < signedSize; x++) {
-
 				//check the FOWArray written by the worker, if is tagged for keeping the time then:
 				if (FOWArray[x + y * signedSize]) {
-					FOWTimeArray[x + y * signedSize] = (FOWTimeArray[x + y * signedSize]) + ( GetWorld()->GetDeltaSeconds());
-				}
-				//if the current value is not tagged for time, reset the value
-				if (!FOWArray[x + y * signedSize]) {
+					FOWTimeArray[x + y * signedSize] = FOWTimeArray[x + y * signedSize] + GetWorld()->GetDeltaSeconds();
+				}else{ 
+					//if the current value is not tagged for time, reset the value
 					FOWTimeArray[x + y * signedSize] = 0.0f;
 				}
 			}
@@ -91,7 +86,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		LastFrameTextureData.Init(FColor(0, 0, 0, 255), arraySize);
 		HorizontalBlurData.Init(0, arraySize);
 		TerraIncog.Init(true, arraySize);
-		FowThread = new AFogOfWarWorker(this);
+		FOWThread = new AFogOfWarWorker(this);
 
 		//Time stuff
 		FOWTimeArray.Init(0.0f, arraySize);
@@ -189,8 +184,8 @@ void AFogOfWarManager::debugTextureAccess() {
 
 }
 
-void AFogOfWarManager::RegisterFowActor(AActor* Actor) {
-	FowActors.Add(Actor);
+void AFogOfWarManager::RegisterFOWActor(AActor* Actor) {
+	FOWActors.Add(Actor);
 }
 
 bool AFogOfWarManager::GetIsBlurEnabled() {
@@ -203,7 +198,7 @@ bool AFogOfWarManager::GetIsTextureFileEnabled() {
 
 void AFogOfWarManager::LogNames() {
 	//Iterate over FowActors TArray
-	for (auto& Actor : FowActors) {
+	for (auto& Actor : FOWActors) {
 
 		FString Name = Actor->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("The name of this actor is: %s"), *Name);

@@ -1,11 +1,8 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "Components/ActorComponent.h"
 #include "FogOfWarManager.h"
 #include "RegisterToFOW.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FOWFORK_API URegisterToFOW : public UActorComponent
@@ -18,9 +15,6 @@ public:
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/*Select the FOW Manager*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
@@ -42,6 +36,5 @@ public:
 		bool isActorInTerraIncog = false;
 	/*How far will the actor be able to see*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
-		FVector2D SightRange = FVector2D(9.0f);
-	
+		FVector2D SightRange = FVector2D(9.0f);	
 };

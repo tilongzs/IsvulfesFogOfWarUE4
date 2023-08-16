@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "FogOfWarWorker.h"
+﻿#include "FogOfWarWorker.h"
 #include "FOWFork.h"
 #include "FogOfWarManager.h"
 #include "RegisterToFOW.h"
@@ -41,9 +39,9 @@ uint32 AFogOfWarWorker::Run() {
 			time = Manager->GetWorld()->TimeSeconds;
 		}
 		if (!Manager->bHasFOWTextureUpdate) {
-			UpdateFowTexture();
+			UpdateFOWTexture();
 			if (Manager && Manager->GetWorld()) {
-				Manager->fowUpdateTime = Manager->GetWorld()->TimeSince(time);
+				Manager->FOWUpdateTime = Manager->GetWorld()->TimeSince(time);
 			}
 		}
 		FPlatformProcess::Sleep(0.1f);
@@ -51,7 +49,7 @@ uint32 AFogOfWarWorker::Run() {
 	return 0;
 }
 
-void AFogOfWarWorker::UpdateFowTexture() {
+void AFogOfWarWorker::UpdateFOWTexture() {
 	Manager->LastFrameTextureData = TArray<FColor>(Manager->TextureData);
 	uint32 halfTextureSize = Manager->TextureSize / 2;
 	int signedSize = (int)Manager->TextureSize; //For convenience....
@@ -61,7 +59,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 	float dividend = 100.0f / Manager->SamplesPerMeter;
 
 	URegisterToFOW* FOWComponent = nullptr;
-	for (auto Itr(Manager->FowActors.CreateIterator()); Itr; Itr++) {
+	for (auto Itr(Manager->FOWActors.CreateIterator()); Itr; Itr++) {
 		// if you experience an occasional crash
 		if (StopTaskCounter.GetValue() != 0) {
 			return;
@@ -177,7 +175,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 						//If this is a previously discovered position that we're not currently looking at, put it into a "shroud of darkness".
 						else {
 							//sum += (Manager->blurKernel[i] * 100);
-							horizontalSum += (Manager->blurKernel[i] * Manager->FowMaskColor); //i mod this to make the blurred color unveiled
+							horizontalSum += (Manager->blurKernel[i] * Manager->FOWMaskColor); //i mod this to make the blurred color unveiled
 						}
 					}
 				}
@@ -192,7 +190,8 @@ void AFogOfWarWorker::UpdateFowTexture() {
 		}
 	}
 
-	if (Manager->bIsFowTimerEnabled){
+	// 如果启用了黑幕定时器，则检测是否重新黑幕
+	if (Manager->bIsFOWTimerEnabled){
 		for (int y = 0; y < signedSize; y++) {
 			for (int x = 0; x < signedSize; x++) {
 				if (!Manager->TerraIncog[x + (y * signedSize)]) {
@@ -206,7 +205,7 @@ void AFogOfWarWorker::UpdateFowTexture() {
 						//This line sets the color to black again in the textureData, sets the UnfoggedData to False
 						Manager->FOWArray[x + (y * signedSize)] = true;
 
-						if (Manager->FOWTimeArray[x + y * signedSize] >= Manager->FowTimeLimit) {
+						if (Manager->FOWTimeArray[x + y * signedSize] >= Manager->FOWTimeLimit) {
 							//setting the color
 							Manager->TextureData[x + y * signedSize] = FColor(0.0, 0.0, 0.0, 255.0);
 							//from FOW to TerraIncognita
@@ -226,5 +225,3 @@ void AFogOfWarWorker::UpdateFowTexture() {
 void AFogOfWarWorker::Stop() {
 	StopTaskCounter.Increment();
 }
-
-

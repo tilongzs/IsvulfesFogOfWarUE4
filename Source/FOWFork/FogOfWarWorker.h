@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "Runnable.h"
 
@@ -31,7 +29,7 @@ public:
 	virtual void Stop();
 
 	//Method to perform work
-	void UpdateFowTexture();
+	void UpdateFOWTexture();
 	bool bShouldUpdate = false;
 	bool isWriteUnFog = false;
 	bool isWriteTerraIncog = false;
