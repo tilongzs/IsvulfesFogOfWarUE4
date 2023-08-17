@@ -30,7 +30,7 @@ public:
 		bool bCheckActorFOW = false;
 	/*Should the actor reveal texels that are out of LOS*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
-		bool bUseLineOfSight = true;
+		bool bUseLineOfSight = false;
 	/**/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		bool isActorInTerraIncog = false;

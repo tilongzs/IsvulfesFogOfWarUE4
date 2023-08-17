@@ -1,5 +1,6 @@
 ﻿#include "RegisterToFOW.h"
 #include "FogOfWarManager.h"
+#include <Kismet/GameplayStatics.h>
 
 URegisterToFOW::URegisterToFOW()
 {
@@ -13,6 +14,11 @@ void URegisterToFOW::BeginPlay()
 	UE_LOG(LogTemp, Log, TEXT("I am alive %s"), *ObjectName);
 
 	//registering the actor to the FOW Manager
+	if (!Manager)
+	{
+		Manager = Cast<AFogOfWarManager>(UGameplayStatics::GetActorOfClass(this, AFogOfWarManager::StaticClass()));
+	}
+
 	if (Manager != nullptr) {
 		Manager->RegisterFOWActor(GetOwner());
 	}
