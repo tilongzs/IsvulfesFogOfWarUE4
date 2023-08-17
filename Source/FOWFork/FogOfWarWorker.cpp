@@ -58,17 +58,17 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 	float dividend = 100.0f / Manager->SamplesPerMeter;
 
 	URegisterToFOW* FOWComponent = nullptr;
-	for (auto Itr(Manager->FOWActors.CreateIterator()); Itr; Itr++) {
+	for(auto Actor : Manager->FOWActors){
 		// if you experience an occasional crash
 		if (StopTaskCounter.GetValue() != 0) {
 			return;
 		}
 		//Find actor position
-		FOWComponent = (*Itr)->FindComponentByClass<URegisterToFOW>();
-		if (!*Itr || !FOWComponent || !IsValid(FOWComponent)) {
+		FOWComponent = Actor->FindComponentByClass<URegisterToFOW>();
+		if (!FOWComponent || !IsValid(FOWComponent)) {
 			continue;
 		}
-		FVector position = (*Itr)->GetActorLocation();
+		FVector position = Actor->GetActorLocation();
 
 		//Get sight range from FOWComponent
 		sightTexels = FOWComponent->SightRange * Manager->SamplesPerMeter;
@@ -82,7 +82,7 @@ void AFogOfWarWorker::UpdateFOWTexture() {
 		FVector2D textureSpacePos = FVector2D(posX, posY);
 		int size = (int)Manager->TextureSize;
 
-		FCollisionQueryParams queryParams(FName(TEXT("FOW trace")), false, (*Itr));
+		FCollisionQueryParams queryParams(FName(TEXT("FOW trace")), false, Actor);
 		int halfKernelSize = (Manager->blurKernelSize - 1) / 2;
 
 		//Store the positions we want to blur
