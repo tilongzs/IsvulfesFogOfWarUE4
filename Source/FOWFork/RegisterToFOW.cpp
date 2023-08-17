@@ -1,7 +1,5 @@
 ﻿#include "RegisterToFOW.h"
-#include "FOWFork.h"
 #include "FogOfWarManager.h"
-
 
 URegisterToFOW::URegisterToFOW()
 {

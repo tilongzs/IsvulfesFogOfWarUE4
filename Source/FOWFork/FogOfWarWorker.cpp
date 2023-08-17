@@ -1,8 +1,7 @@
 ﻿#include "FogOfWarWorker.h"
-#include "FOWFork.h"
 #include "FogOfWarManager.h"
 #include "RegisterToFOW.h"
-#include "RunnableThread.h"
+#include <HAL/RunnableThread.h>
 
 AFogOfWarWorker::AFogOfWarWorker() {}
 

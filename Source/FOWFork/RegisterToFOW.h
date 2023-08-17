@@ -5,7 +5,7 @@
 #include "RegisterToFOW.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class FOWFORK_API URegisterToFOW : public UActorComponent
+class URegisterToFOW : public UActorComponent
 {
 	GENERATED_BODY()
 

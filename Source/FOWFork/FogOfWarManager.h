@@ -8,7 +8,7 @@
 #include "FogOfWarManager.generated.h"
 
 UCLASS()
-class FOWFORK_API AFogOfWarManager : public AActor
+class AFogOfWarManager : public AActor
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,7 @@ public:
 
 	//The number of samples per 100 unreal units
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
-		float SamplesPerMeter = 2.0f;
+		float SamplesPerMeter = 4.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		//FColor	ColorOne = FColor((uint8)255, (uint8)255, (uint8)255, 255);
@@ -50,7 +50,7 @@ public:
 		uint8	TerraIncogColor = (uint8)0;
 
 	UPROPERTY(EditAnywhere, Category = FogOfWar)
-		bool bUseTextureFile = true;
+		bool bUseTextureFile = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		UTexture2D* TextureInFile = nullptr;

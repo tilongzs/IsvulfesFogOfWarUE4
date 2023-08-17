@@ -1,13 +1,11 @@
 ﻿#pragma once
 
-#include "Runnable.h"
-
 /**
 * Worker thread for updating the fog of war data.
 */
 class AFogOfWarManager;
 
-class FOWFORK_API AFogOfWarWorker : public FRunnable
+class AFogOfWarWorker : public FRunnable
 {
 	//Thread to run the FRunnable on
 	FRunnableThread* Thread;
