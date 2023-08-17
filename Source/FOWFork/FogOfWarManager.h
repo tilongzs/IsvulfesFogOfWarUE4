@@ -39,6 +39,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		float SamplesPerMeter = 4.0f;
 
+	// 初始化时是否全部为未探索（全黑）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
+		bool bDefaultTerraIncog = true;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FogOfWar)
 		//FColor	ColorOne = FColor((uint8)255, (uint8)255, (uint8)255, 255);
 		uint8	UnfogColor = (uint8)255;

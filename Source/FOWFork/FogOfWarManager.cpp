@@ -82,10 +82,18 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		FOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		LastFOWTexture = UTexture2D::CreateTransient(TextureSize, TextureSize);
 		int arraySize = TextureSize * TextureSize;
-		TextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize); // 初始迷雾透明度（255完全透明）
-		LastFrameTextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize);
+		if (bDefaultTerraIncog)
+		{
+			TextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize); // 初始迷雾透明度（255完全透明）
+			LastFrameTextureData.Init(FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255), arraySize);
+		}
+		else
+		{
+			TextureData.Init(FColor(FOWMaskColor, FOWMaskColor, FOWMaskColor, 255), arraySize); // 初始迷雾透明度（255完全透明）
+			LastFrameTextureData.Init(FColor(FOWMaskColor, FOWMaskColor, FOWMaskColor, 255), arraySize);
+		}
 		HorizontalBlurData.Init(0, arraySize);
-		TerraIncog.Init(true, arraySize);
+		TerraIncog.Init(bDefaultTerraIncog, arraySize);
 		ViewingArea.Init(false, arraySize);
 		FOWThread = new AFogOfWarWorker(this);
 
@@ -123,7 +131,7 @@ void AFogOfWarManager::StartFOWTextureUpdate() {
 		void* Data = Mip.BulkData.Lock(LOCK_READ_WRITE);
 		uint8* raw = NULL;
 		raw = (uint8*)Data;
-		FColor pixel = FColor(0, 0, 0, 255);//used for spliting the data stored in raw form
+		FColor pixel = FColor(TerraIncogColor, TerraIncogColor, TerraIncogColor, 255);//used for spliting the data stored in raw form
 
 		for (int y = 0; y < TextureInFileSize; y++) {
 			//data in the raw var is serialized i think ;)
